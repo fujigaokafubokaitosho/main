@@ -811,8 +811,6 @@ window.onload = async function() {
     });
     
     console.log("Updated CONFIG:", window.CONFIG); // デバッグログ
-
-  }
   } catch (e) {
     console.error("Config load error", e);
     // 取得失敗時のデフォルト値
@@ -891,5 +889,6 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
