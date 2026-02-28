@@ -4,6 +4,12 @@
  * 各種タイムアウト時間、表示文言、ステータス定義を一元管理。
  * メンテナンス時はここを書き換える。
 */
+
+/* GASからもらうため仮値*/
+let GAS_MAX_LOAN_LIMIT = 0;
+let GAS_ALERT_DAYS = 0;
+let GAS_LIMIT_DAYS = 0;
+
   const CONFIG = {
     MAX_LOAN_LIMIT:GAS_MAX_LOAN_LIMIT,
     LIMIT_DAYS :GAS_LIMIT_DAYS,
@@ -74,3 +80,4 @@
     },
 
   };
+
