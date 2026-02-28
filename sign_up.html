@@ -70,14 +70,19 @@
     const url = `${GAS_URL}?action=${action}`;
     const response = await fetch(url, {
       method: 'POST',
-      mode: 'no-cors', // CORSを有効にする
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params) // JSON形式で送る
+      // mode: 'no-cors', // CORSを有効にする
+      // headers: { 'Content-Type': 'application/json' },
+      // body: JSON.stringify(params) // JSON形式で送る
+　    mode: 'cors', // corsに設定
+  　  headers: { 
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json' // ★JSONでレスポンスを受け取ることを明示
+    },
+    body: bodyParams
     });
     
-    //return await response.json();
-     return { success: true };
-  }
+    return await response.json();
+      }
 
   // 本人確認チェック
   async function checkIdentity() {
@@ -164,6 +169,7 @@
 </script>
 </body>
 </html>
+
 
 
 
