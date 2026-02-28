@@ -65,7 +65,11 @@
   function checkIdentity() {
     const id = document.getElementById('regId').value.trim();
     const name = document.getElementById('regName').value.trim();
-    google.script.run.withSuccessHandler(res => {
+    const res = await callGasApi({
+        action: 'verifyInitialID',
+        id: id,
+        name: name
+    });
       if(res.success) {
         verifiedId = id;
         document.getElementById('step1').classList.remove('active');
@@ -73,7 +77,6 @@
       } else {
         document.getElementById('err1').innerText = res.message;
       }
-    }).verifyInitialID(id, name);
   }
 
   function validatePass() {
@@ -93,7 +96,12 @@
     err.style.color = "var(--primary)";
     err.innerText = "登録情報を送信中...";
 
-    google.script.run.withSuccessHandler(res => {
+    const res = await callGasApi({
+        action: 'registerUser',
+        verifiedId: verifiedId,
+        email: email,
+        pass: pass
+    });
       if(res.success) {
         // --- 成功時の即時処理 ---
         const mainBox = document.getElementById('mainBox');
@@ -118,8 +126,9 @@
         err.style.color = "var(--error)";
         err.innerText = res.message;
       }
-    }).registerUser(verifiedId, email, pass);
-  }
+    }
+}
 </script>
 </body>
+
 </html>
