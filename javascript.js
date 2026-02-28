@@ -96,8 +96,14 @@ async function callGasApi(payload) {
   //const GAS_URL = "https://script.google.com/macros/s/AKfycbxBNrMRwZ4UoQdbvTuyAgI9Cx56-oKTPt_kUUZqgTY/dev";
   // URLパラメータにactionを付与してGETで送る（GASの制約上、GETの方が結果を受け取りやすいため）
   const queryParams = new URLSearchParams(payload);
-  const response = await fetch(`${GAS_URL}?${queryParams.toString()}`, {
-    method: 'GET'
+  //const response = await fetch(`${GAS_URL}?${queryParams.toString()}`, {
+  //  method: 'GET'
+  //});
+ const response = await fetch(url, {
+    method: 'POST', // GETからPOSTへ変更
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(queryParams) // データはボディに入れて送信
   });
   return await response.json();
 }
@@ -893,6 +899,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
