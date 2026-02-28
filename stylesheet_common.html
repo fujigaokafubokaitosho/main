@@ -1,0 +1,168 @@
+<style>
+  :root { 
+    --primary: #2563eb; 
+    --bg: #f8fafc; 
+    --accent: #4f46e5; 
+    --success: #10b981; 
+    --danger: #ef4444; 
+    --text: #1e293b;
+  }
+
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    background: var(--bg); 
+    margin: 0; 
+    padding: 0;
+    padding-bottom: 90px; /* ナビバーとiPhoneのセーフエリア分 */
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .card { 
+    background: white; 
+    padding: 15px; 
+    border-radius: 16px; 
+    margin: 10px; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+  }
+
+  /* 下部固定ナビゲーション */
+  .bottom-nav { 
+    position: fixed; 
+    bottom: 0; left: 0; right: 0; 
+    
+    height: 70px; 
+    background: rgba(255, 255, 255, 0.95); 
+    backdrop-filter: blur(10px);
+    display: flex; 
+    border-top: 1px solid #e2e8f0; 
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .nav-item { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    color: #94a3b8; 
+    font-size: 11px; 
+    transition: 0.2s;
+  }
+
+  .nav-item.active { color: var(--primary); }
+  .nav-item .material-icons { font-size: 26px; margin-bottom: 2px; }
+
+  /* カートのバッジ */
+  .cart-count-badge { 
+    position: absolute; 
+    top: 8px; right: 22%; 
+    background: var(--danger); 
+    color: white; 
+    border-radius: 12px; 
+    min-width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: bold; 
+    border: 2px solid white;
+  }
+
+  /* トースト通知（ふわっと出るやつ） */
+  #toast { 
+    position: fixed; 
+    top: 30px; left: 50%; 
+    transform: translateX(-50%); 
+    background: rgba(30, 41, 59, 0.95); /* 少し濃くして視認性アップ */
+    color: white; 
+    //padding: 10px 20px; 
+    padding: 12px 24px;
+    //border-radius: 30px; 
+    border-radius: 12px;
+    font-size: 14px; 
+    z-index: 2000; 
+    opacity: 0; 
+    transition: 0.3s; 
+    pointer-events: none;
+    /* ここを追加・修正 */
+    //width: auto;              /* 固定幅にせず自動に */
+    width: 80%; /va/
+    max-width: 320px; /va/
+    //white-space: nowrap;      /* 基本は1行で表示 */
+    white-space: normal; /va/
+    word-break: break-all; /ca/
+    min-width: fit-content;   /* 中身の文字にぴったり合わせる */
+    max-width: 85%;           /* 画面からはみ出さない制限 */
+    text-align: center;
+    line-height: 1.5; /va/
+    display: flex; /va/
+    align-items: center;/va/
+    justify-content: center;/va/
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);/va/
+    //box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  input { 
+    width: 100%; 
+    padding: 14px; 
+    margin: 10px 0; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 12px; 
+    font-size: 16px; 
+    box-sizing: border-box; 
+    background: #f1f5f9;
+  }
+  
+  button { 
+    width: 100%; 
+    padding: 16px; 
+    border: none; 
+    border-radius: 12px; 
+    color: white; 
+    font-weight: bold; 
+    font-size: 16px; 
+    cursor: pointer;
+  }
+  
+  button:active { transform: scale(0.98); opacity: 0.9; }
+
+  #reader { 
+    width: 100% !important; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    display: none; 
+    margin: 15px 0; 
+    border: 2px solid var(--accent);
+  }
+
+  .book-item { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 15px; 
+    border-bottom: 1px solid #f1f5f9; 
+    background: white; 
+  }
+
+  #loading { 
+    display:none; 
+    position:fixed; 
+    inset:0; 
+    background:rgba(255,255,255,0.8); 
+    z-index:9999; 
+    align-items:center; 
+    justify-content:center;
+  }
+
+  .btn-qr-help { 
+    background: none; 
+    color: #64748b; 
+    font-size: 13px; 
+    margin-top: 20px; 
+    text-decoration: underline; 
+    border: none;
+  }
+</style>

@@ -1,0 +1,78 @@
+<script>
+/**
+ * @brief アプリケーション全体の定数およびメッセージ定義
+ * @details 
+ * 各種タイムアウト時間、表示文言、ステータス定義を一元管理。
+ * メンテナンス時はここを書き換える。
+*/
+  const CONFIG = {
+    MAX_LOAN_LIMIT:GAS_MAX_LOAN_LIMIT,
+    LIMIT_DAYS :GAS_LIMIT_DAYS,
+    ALERT_DAYS:GAS_ALERT_DAYS,
+    USE_SCANNER: false,
+    TIMEOUT: { TOAST_DISPLAY: 3000,
+               CAMERA_INIT_DELAY: 400,
+               GPS_TIMEOUT: 5500,
+               GPS_CASH: 35000 },
+    STORAGE_KEY: { 
+      TOKEN: 'lib_app_token', 
+      EMAIL: 'lib_app_email' 
+    },
+    STATUS: { ON_LOAN: "貸出中",
+              IN_STOCK: "在庫あり" },
+    SCANNER: { FPS: 10, 
+               QR_BOX: 250 },
+    TABS: { MY_PAGE: 0,
+            COLLECTIONS: 1 },
+    LABEL:{
+      DUE_DATE_SHORT: "期限",    
+      UNTIL: "まで",
+      RETURNED: "に返却済み"
+    },
+    MSG: {
+      AUTH_LOADING:"認証中...",
+      PROCESSING:"処理中",
+      SENDING: "送信中...",
+      SESSION:"セッション確認中...",
+      LOGIN_REQUIRED: "ログイン情報を入力してください。",
+      AUTH_FAILED: "ログインに失敗しました。",
+      CAMERA_ERROR: "カメラ起動エラー",
+      CART_EMPTY: "本が選択されていません。",
+      CART_CLEARED_STOP: "本がなくなったため中止しました。",
+      ALREADY_ADDED: "既にカートに入っています。",
+      RETURN_CART_ADDED: "返却カートに追加しました。",
+      LOAN_CART_ADDED: "貸出カートに追加しました。",
+      SCAN_SUCCESS: "追加しました。",
+      SUBMIT_ERROR: "承認失敗: ",
+      NO_DATA: "該当する本はありません。",
+      SERVER_ERROR: "通信エラーが発生しました。",
+      MASTER_NOTFOUND: "エラー：蔵書マスタに登録されていません。",
+      CURRENTLY_ON_LOAN: "他のお子様へ貸出中のため追加できません。",
+      EXECUTED: "処理が完了しました。",
+      TX_LOCATION_DATA:"位置情報取得・送信を行っています。",
+      LOCATION_ERROR:"位置情報の取得に失敗しました。",
+      UNKNOWN_ERROR: "不明なエラー",
+      READ_IMAGE_ERROR:"画像の読み込みに失敗しました。",
+      NO_IMAGE:"画像が登録されていません。",
+      FIRST_LOGIN:"ご入力のメールアドレスは初回登録が必要です。\nこれより専用の登録画面へご案内します。",
+      WELCOME_MSG: "👋 はじめてのご利用ですね",
+      // モーダル・特殊表示用
+      RESET_PASS_TITLE: "🔑 パスワードのリセット",
+      RESET_PASS_SUB: "登録済みのメールアドレスを入力してください。\n管理者にリセット依頼を送信します。",
+      RESET_PASS_REQ: "管理者にリセット依頼を届けています",
+      RESET_PASS_SENT: "リセット依頼を送信しました。",
+      RESET_PASS_ERR: "メールアドレスを入力してください",
+      SESSION_EXPIRED: "セッションが切れました。再ログインしてください",
+      // 動的メッセージ
+      LIMIT_OVER: (limit) => "一度に貸出カートに入れられるのは " + limit + " 冊までです。",
+      RETURN_DATE: (date) => date + "返却",
+      DUE_DATE_LABEL: "期限",
+      NO_LOAN_DATA: "現在借りている本はありません",
+      CART_HEADER_RET: "▼ 返却する",
+      CART_HEADER_LOAN: "▼ 貸出する",
+      BADGE_MINE: "あなたが借用中",
+      BADGE_OTHERS: "他のお子様へ貸出中",
+    },
+
+  };
+</script>
