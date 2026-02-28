@@ -70,7 +70,7 @@
     const url = `${GAS_URL}?action=${action}`;
     const response = await fetch(url, {
       method: 'POST',
-      mode: 'cors', // CORSを有効にする
+      mode: 'no-cors', // CORSを有効にする
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params) // JSON形式で送る
     });
@@ -161,4 +161,5 @@
 </script>
 </body>
 </html>
+
 
