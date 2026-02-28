@@ -83,44 +83,23 @@ function setLoadingMessage(main, sub = "") {
  * google.script.run を介してサーバーからWebアプリのベースURLを取得し、
  * クエリパラメータ `?page=sign_up` を付与してリダイレクトする。
  */
-//https://github.com/fujigaokafubokaitosho/main/
 function goToSignup() {
     window.location.href = "https://fujigaokafubokaitosho.github.io/main/sign_up.html";
-//  google.script.run.withSuccessHandler(function(url) {
-//    window.top.location.href = url + "?page=sign_up";
-//  }).getAppUrl();
 }
-
-//async function callGasApi(payload) {
-//   const GAS_URL = "https://script.google.com/macros/s/AKfycbz5QNDlZ0rB3C3DP2CZ31Ff4ECrki53K12WtLccUMXQlyqs3yBOnVaHpMc7WvYAsfeh/exec";
-  //const GAS_URL = "https://script.google.com/macros/s/AKfycbxBNrMRwZ4UoQdbvTuyAgI9Cx56-oKTPt_kUUZqgTY/dev";
-  // URLパラメータにactionを付与してGETで送る（GASの制約上、GETの方が結果を受け取りやすいため）
-  //const response = await fetch(`${GAS_URL}?${queryParams.toString()}`, {
-  //  method: 'GET'
-  //});
-//  return await response.json();
-//}
 
 async function callGasApi(payload) {
   const GAS_URL = "https://script.google.com/macros/s/AKfycbz5QNDlZ0rB3C3DP2CZ31Ff4ECrki53K12WtLccUMXQlyqs3yBOnVaHpMc7WvYAsfeh/exec";
-  
-  // 1. URLパラメータ用に action を抽出
   const action = payload.action;
-  
-  // 2. ボディ用に action を除いた残りのパラメータを作成
   const { action: _, ...params } = payload;
-  
-  // 3. URLにactionを付与
-  const url = `${GAS_URL}?action=${action}`;
-  
-  // 4. POSTリクエスト送信
+  const url = `${GAS_URL}?action=${action}`;  
+  const bodyParams = new URLSearchParams(params);
   const response = await fetch(url, {
     method: 'POST',
     mode: 'cors',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(params) // paramsをボディとして設定
+    body: bodyParams
   });
-  
+
   return await response.json();
 }
 
@@ -916,6 +895,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
