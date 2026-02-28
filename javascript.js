@@ -626,72 +626,97 @@ async function requestPermissions() {
  * 5. **完了処理**: 全件成功時は2秒後に自動ログアウトし、一部エラー時は警告を表示して画面を維持。
  * @param {string} qrCode - スキャンした管理者用QRコード（場所・権限の証明）
  */
-  function executeSubmit(qrCode) {
-    // すでに処理中の場合は何もしない（二重送信防止）
-    if (document.getElementById('loading').style.display === 'flex') return;
-    const email = localStorage.getItem(CONFIG.STORAGE_KEY.EMAIL);
-    const token = localStorage.getItem(CONFIG.STORAGE_KEY.TOKEN);
+async function executeSubmit(qrCode) {
+  // すでに処理中の場合は何もしない（二重送信防止）
+  if (document.getElementById('loading').style.display === 'flex') return;
 
-    const toReturn = [], toBorrow = [];
-    cart.forEach(t => {
-      const b = masterBooks.find(x => String(x.title).trim() === String(t).trim());
-      if (b && String(b.user).trim() === String(currentUser).trim() && String(b.status).trim() === CONFIG.STATUS.ON_LOAN) toReturn.push(t);
-      else toBorrow.push(t);
+  // ※ sessionStorageを使用（login関数と合わせた方が安全です）
+  const email = sessionStorage.getItem(CONFIG.STORAGE_KEY.EMAIL) || localStorage.getItem(CONFIG.STORAGE_KEY.EMAIL);
+  const token = sessionStorage.getItem(CONFIG.STORAGE_KEY.TOKEN) || localStorage.getItem(CONFIG.STORAGE_KEY.TOKEN);
+
+  const toReturn = [], toBorrow = [];
+  cart.forEach(t => {
+    const b = masterBooks.find(x => String(x.title).trim() === String(t).trim());
+    if (b && String(b.user).trim() === String(currentUser).trim() && String(b.status).trim() === CONFIG.STATUS.ON_LOAN) {
+      toReturn.push(t);
+    } else {
+      toBorrow.push(t);
+    }
+  });
+
+  setLoadingMessage(CONFIG.MSG.PROCESSING, CONFIG.MSG.TX_LOCATION_DATA);
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('adminQrContainer').style.display = 'none';
+  lockScreen();
+
+  try {
+    // 1. カメラ停止
+    await stopAdminScan();
+
+    // 2. GPS取得待ち
+    if (!gpsPromise) { unlockScreen(); return; }
+    const gps = await gpsPromise;
+
+    // 3. サーバー通信 (google.script.run を callGasApi に書き換え)
+    const res = await callGasApi({
+      action: 'processUnifiedEntry',
+      email: email,
+      token: token,
+      toReturn: JSON.stringify(toReturn), // 配列は文字列に変換
+      toBorrow: JSON.stringify(toBorrow), // 配列は文字列に変換
+      qrCode: qrCode,
+      lat: gps.lat,
+      lng: gps.lng,
+      acc: gps.acc
     });
-    setLoadingMessage(CONFIG.MSG.PROCESSING, CONFIG.MSG.TX_LOCATION_DATA);
-    document.getElementById('loading').style.display = 'flex';
-    document.getElementById('adminQrContainer').style.display = 'none';
-    lockScreen();
 
-    setTimeout(() => {
-      stopAdminScan(); 
-      if (!gpsPromise) { unlockScreen(); return; }
-      gpsPromise.then(gps => {
-        google.script.run.withSuccessHandler(res => {
+    // --- ここからは元の成功時（withSuccessHandler）のロジック ---
+    if (res === false) {
+      handleAuthError();
+      return;
+    }
 
-        // セッションタイムアウト
-        if (res === false) {
-        handleAuthError();
-        return;
-        }
-        if (res && res.success) {
-          // サーバーで実際に処理された本だけをUIに反映
-          (res.processedTitles || []).forEach(title => {
-            cart = cart.filter(t => t !== title);
-            const idx = masterBooks.findIndex(b => b.title === title);
-            if (idx !== -1) {
-              const isRet = toReturn.includes(title);
-              // 貸出中冊数の変数をリアルタイムで増減させる
-            if (isRet) {
-              currentLoanCount--; // 返却されたらマイナス
-            } else {
-              currentLoanCount++; // 貸し出されたらプラス
-            }
-              // メモリ上のデータを書き換え（再読み込みなしで画面を更新するため）
-              masterBooks[idx].status = isRet ? CONFIG.STATUS.IN_STOCK : CONFIG.STATUS.ON_LOAN;
-              masterBooks[idx].user = isRet ? "" : currentUser;
-              if (isRet) {
-                const now = new Date();
-                masterBooks[idx].lastReturnDate = (now.getMonth() + 1) + "/" + now.getDate();
-              }
-            }
-          });
-          // 各種リスト表示を再描画
-          updateCartUI(); renderMyLoans(); renderComplexLists(); renderSearchList();
-          if (res.partialError) { unlockScreen(); showToast(res.message, true); } 
-          else {
-            showToast(res.message || CONFIG.MSG.EXECUTED);
-            // 2秒後に自動ログアウト（利便性とセキュリティの両立）
-            setTimeout(() => { if (currentUser) logout(); else unlockScreen(); }, 2000);
+    if (res && res.success) {
+      // サーバーで実際に処理された本だけをUIに反映
+      (res.processedTitles || []).forEach(title => {
+        cart = cart.filter(t => t !== title);
+        const idx = masterBooks.findIndex(b => b.title === title);
+        if (idx !== -1) {
+          const isRet = toReturn.includes(title);
+          if (isRet) {
+            currentLoanCount--;
+          } else {
+            currentLoanCount++;
           }
-        } else {
-          unlockScreen();
-          showToast(CONFIG.MSG.SUBMIT_ERROR + (res ? res.message : CONFIG.MSG.UNKNOWN_ERROR), true);
+          masterBooks[idx].status = isRet ? CONFIG.STATUS.IN_STOCK : CONFIG.STATUS.ON_LOAN;
+          masterBooks[idx].user = isRet ? "" : currentUser;
+          if (isRet) {
+            const now = new Date();
+            masterBooks[idx].lastReturnDate = (now.getMonth() + 1) + "/" + now.getDate();
+          }
         }
-      }).withFailureHandler(() => { unlockScreen(); showToast(CONFIG.MSG.SERVER_ERROR, true); })
-      .processUnifiedEntry(email, token, toReturn, toBorrow, qrCode, gps.lat, gps.lng, gps.acc);
-    }).catch(err => { unlockScreen(); showToast(CONFIG.MSG.LOCATION_ERROR, true); });
-  }, 150);
+      });
+
+      updateCartUI(); renderMyLoans(); renderComplexLists(); renderSearchList();
+
+      if (res.partialError) {
+        unlockScreen();
+        showToast(res.message, true);
+      } else {
+        showToast(res.message || CONFIG.MSG.EXECUTED);
+        setTimeout(() => { if (currentUser) logout(); else unlockScreen(); }, 2000);
+      }
+    } else {
+      unlockScreen();
+      showToast(CONFIG.MSG.SUBMIT_ERROR + (res ? res.message : CONFIG.MSG.UNKNOWN_ERROR), true);
+    }
+
+  } catch (err) {
+    // --- 元の FailureHandler および GPSエラー時のロジック ---
+    unlockScreen();
+    showToast(CONFIG.MSG.SERVER_ERROR || "通信エラーが発生しました", true);
+    console.error("Submit Error:", err);
+  }
 }
 
 /**
@@ -777,12 +802,11 @@ function showLoginSection() {
 /**
  * ページ読み込み時に自動実行される初期化処理
  */
-window.onload = function() {
+window.onload = async function() {
   const email = sessionStorage.getItem(CONFIG.STORAGE_KEY.EMAIL);
   const token = sessionStorage.getItem(CONFIG.STORAGE_KEY.TOKEN);
 
-//  localStorage.clear();
-  //  そもそもログイン情報がブラウザにない場合は、ログイン画面のまま
+  // そもそもログイン情報がブラウザにない場合は、ログイン画面のまま
   if (!email || !token) {
     showLoginSection();
     return;
@@ -792,28 +816,36 @@ window.onload = function() {
   setLoadingMessage(CONFIG.MSG.SESSION);
   document.getElementById('loading').style.display = 'flex';
 
-  google.script.run
-    .withSuccessHandler(res => {
-      document.getElementById('loading').style.display = 'none';
-      
-      if (res && res.success) {
-        // 取得したデータをメモリに格納
-        currentUser = res.userName;
-        masterBooks = res.allBooks || [];
-        currentLoanCount = res.currentLoanCount || 0;
-        loginSuccessByToken(res.userName); // email ではなく userName を渡す
-      } else {
-        // 1時間過ぎていたら追い出す
-        handleAuthError();
-      }
-    })
-    .withFailureHandler(() => {
-      document.getElementById('loading').style.display = 'none';
-      showToast(CONFIG.MSG.SERVER_ERROR, true);
-    })
-    .checkSession(email, token);
-};
+  try {
+    // --- 通信部分の書き換え ---
+    // callGasApiの結果が返ってくるまで、ここで一時停止(await)します
+    const res = await callGasApi({
+      action: 'checkSession',
+      email: email,
+      token: token
+    });
 
+    // --- ここから下は元の SuccessHandler と同じロジック ---
+    document.getElementById('loading').style.display = 'none';
+    
+    if (res && res.success) {
+      // 取得したデータをメモリに格納
+      currentUser = res.userName;
+      masterBooks = res.allBooks || [];
+      currentLoanCount = res.currentLoanCount || 0;
+      loginSuccessByToken(res.userName); // email ではなく userName を渡す
+    } else {
+      // 1時間過ぎていたら追い出す
+      handleAuthError();
+    }
+    
+  } catch (err) {
+    // --- FailureHandler と同じロジック ---
+    document.getElementById('loading').style.display = 'none';
+    showToast(CONFIG.MSG.SERVER_ERROR, true);
+    console.error("Session Check Error:", err);
+  }
+};
 /**
  * トークン認証成功時に画面を切り替える補助関数
  */
@@ -847,3 +879,4 @@ function handleAuthError() {
 
 
 </script>
+
