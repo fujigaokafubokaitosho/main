@@ -4,6 +4,7 @@ let masterBooks = [];
 let currentScanner = null; 
 let gpsPromise = null;
 let currentLoanCount = 0;
+window.CONFIG = window.CONFIG || {};
 
 /**
  * @brief 画面操作のロック（二重送信防止）
@@ -886,6 +887,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
