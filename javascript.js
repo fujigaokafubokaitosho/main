@@ -90,7 +90,7 @@ function goToSignup() {
 }
 
 async function callGasApi(payload) {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyolxvaK5ZRUZ5RxXjWcoLAGJgcVuN1ZQsxXxJfFxxHghtmdmhA1jFaNZWldvcPsb_L/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbz5QNDlZ0rB3C3DP2CZ31Ff4ECrki53K12WtLccUMXQlyqs3yBOnVaHpMc7WvYAsfeh/exec";
   
   // URLパラメータにactionを付与してGETで送る（GASの制約上、GETの方が結果を受け取りやすいため）
   const queryParams = new URLSearchParams(payload);
@@ -891,6 +891,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
