@@ -101,6 +101,40 @@
   <button onclick="submitSignup()">登録</button>
 </div>
   
+<div id="mainBox" class="card">
+  <h2>アカウント登録</h2>
+
+  <div id="step1" class="step active">
+    <div class="input-group">
+      <label>配布されたID</label>
+      <input type="text" id="regId" placeholder="例: 1001">
+    </div>
+    <div class="input-group">
+      <label>お名前（ひらがな）</label>
+      <input type="text" id="regName" placeholder="例: やまだ たろう">
+    </div>
+    <button id="nextBtn" onclick="checkIdentity()">次へ</button>
+    <p id="err1" class="msg" style="color:var(--error)"></p>
+  </div>
+
+  <div id="step2" class="step">
+    <div class="input-group">
+      <label>メールアドレス</label>
+      <input type="email" id="regEmail" placeholder="example@mail.com">
+    </div>
+    <div class="input-group">
+      <label>パスワード (8文字以上32文字以内)</label>
+      <input type="password" id="regPass1" oninput="validatePass()">
+    </div>
+    <div class="input-group">
+      <label>パスワード (再入力)</label>
+      <input type="password" id="regPass2" oninput="validatePass()">
+    </div>
+    <button id="submitBtn" onclick="submitRegister()" disabled>登録を完了する</button>
+    <p id="err2" class="msg" style="color:var(--error)"></p>
+  </div>
+</div>
+
 <div id="mainSection" style="display:none;">
   <header>
     <div style="display:flex; align-items:center; gap:8px;">
@@ -227,10 +261,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
