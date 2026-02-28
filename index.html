@@ -85,7 +85,7 @@
     <input type="email" id="email" class="login-input" placeholder="メールアドレス">
     <input type="password" id="pass" class="login-input" placeholder="パスワード">
     <button class="login-btn" onclick="login()">ログイン</button>
-    <p style="margin-top: 20px;">
+    <p style="margin-top: 20px; text-align: center;">
     <a href="#" onclick="goToSignup(); return false;">初回登録はこちら</a>
   　</p>
     <div style="margin-top: 20px; text-align: center;">
@@ -94,6 +94,13 @@
   </div>
 </div>
 
+<div id="signupSection" style="display:none; padding:20px;">
+  <h2>初回アカウント登録</h2>
+  <input type="text" id="signupName" placeholder="お名前">
+  <input type="email" id="signupEmail" placeholder="メールアドレス">
+  <button onclick="submitSignup()">登録</button>
+</div>
+  
 <div id="mainSection" style="display:none;">
   <header>
     <div style="display:flex; align-items:center; gap:8px;">
@@ -219,6 +226,7 @@
 </body>
 
 </html>
+
 
 
 
