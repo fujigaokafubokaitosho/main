@@ -1,5 +1,3 @@
-
-<script>
 let currentUser = null; 
 let cart = []; 
 let masterBooks = []; 
@@ -875,9 +873,3 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
-
-
-</script>
-
-
-
