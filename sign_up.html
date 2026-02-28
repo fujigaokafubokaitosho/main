@@ -77,7 +77,7 @@
     return { success: true }; 
   }
 
-  // ★ 上記がうまくいかない場合は、下記のようにCORSを有効にしたfetchを使います
+  // うまくいかない場合は、下記のようにCORSを有効にしたfetchを使います
   async function callGasApiWithCors(action, params) {
     const url = `${GAS_URL}?action=${action}`;
     const response = await fetch(url, {
@@ -88,21 +88,77 @@
     return await response.json();
   }
 
-  // ここからは修正したcheckIdentity
-  async function checkIdentity() {
-    const id = document.getElementById('regId').value.trim();
-    const name = document.getElementById('regName').value.trim();
+　const id = document.getElementById('regId').value.trim();
+  const name = document.getElementById('regName').value.trim();
+  
+  // ★google.script.run を fetch に置き換え
+  try {
+    const response = await fetch(`${GAS_URL}?action=verifyInitialID`, {
+      method: 'POST',
+      mode: 'cors', // CORSを明示
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ id, name })
+    });
     
-    // google.script.run を callGasApi に変更
-    // ...ロジックをここに記述...
+    const res = await response.json(); // GASからのJSON応答を受け取る
+
+    if(res.success) {
+      verifiedId = id;
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step2').classList.add('active');
+    } else {
+      document.getElementById('err1').innerText = res.message;
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    document.getElementById('err1').innerText = "通信エラーが発生しました。";
   }
 
-  // ...validatePassは変更なし...
-
+  function validatePass() {
+    const p1 = document.getElementById('regPass1').value;
+    const p2 = document.getElementById('regPass2').value;
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = !(p1.length >= 8 && p1 === p2);
+  }
+  
   async function submitRegister() {
-    // google.script.run を callGasApi に変更
-    // ...ロジックをここに記述...
+    const email = document.getElementById('regEmail').value.trim();
+    const pass = document.getElementById('regPass1').value;
+    const btn = document.getElementById('submitBtn');
+    const err = document.getElementById('err2');
+    
+    btn.disabled = true;
+    err.style.color = "var(--primary)";
+    err.innerText = "登録情報を送信中...";
+
+    try {
+      const res = await callGasApi('registerUser', {id: verifiedId, email, pass});
+
+      if(res.success) {
+        const mainBox = document.getElementById('mainBox');
+        mainBox.innerHTML = `
+          <div style="text-align:center; padding:20px;">
+            <i class="material-icons success-icon">check_circle</i>
+            <h2 style="color:var(--success); margin-top:10px;">登録完了！</h2>
+            <p style="color:#64748b;">ログイン画面へ移動します...</p>
+          </div>
+        `;
+
+        setTimeout(() => {
+          window.location.href = LOGIN_URL;
+        }, 1500);
+      } else {
+        btn.disabled = false;
+        err.style.color = "var(--error)";
+        err.innerText = res.message;
+      }
+    } catch (e) {
+      btn.disabled = false;
+      err.style.color = "var(--error)";
+      err.innerText = "通信エラーが発生しました。";
+    }
   }
 </script>
 </body>
 </html>
+
