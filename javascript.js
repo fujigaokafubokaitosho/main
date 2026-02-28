@@ -83,9 +83,9 @@ function setLoadingMessage(main, sub = "") {
  * google.script.run を介してサーバーからWebアプリのベースURLを取得し、
  * クエリパラメータ `?page=sign_up` を付与してリダイレクトする。
  */
-https://github.com/fujigaokafubokaitosho/main/
+//https://github.com/fujigaokafubokaitosho/main/
 function goToSignup() {
-    window.location.href = "https://your-fujigaokafubokaitosho.github.io/main/sign_up.html";
+    window.location.href = "https://fujigaokafubokaitosho.github.io/main/sign_up.html";
 //  google.script.run.withSuccessHandler(function(url) {
 //    window.top.location.href = url + "?page=sign_up";
 //  }).getAppUrl();
@@ -893,6 +893,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
