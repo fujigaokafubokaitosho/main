@@ -78,15 +78,15 @@
   }
 
   // うまくいかない場合は、下記のようにCORSを有効にしたfetchを使います
-  async function callGasApiWithCors(action, params) {
-    const url = `${GAS_URL}?action=${action}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      // mode: 'cors', // ブラウザが自動的にcorsを選択する
-      body: JSON.stringify(params) // JSON形式で送る場合
-    });
-    return await response.json();
-  }
+  // async function callGasApiWithCors(action, params) {
+  //   const url = `${GAS_URL}?action=${action}`;
+  //   const response = await fetch(url, {
+  //     method: 'POST',
+  //     // mode: 'cors', // ブラウザが自動的にcorsを選択する
+  //     body: JSON.stringify(params) // JSON形式で送る場合
+  //   });
+  //   return await response.json();
+  // }
 
 　const id = document.getElementById('regId').value.trim();
   const name = document.getElementById('regName').value.trim();
@@ -161,4 +161,5 @@
 </script>
 </body>
 </html>
+
 
