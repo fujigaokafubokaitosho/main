@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
+<base target="_top">
   <meta charset="UTF-8">
   <meta http-equiv="Permissions-Policy" content="camera=(self 'https://script.google.com')">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://unpkg.com/html5-qrcode"></script>
-  <?!= HtmlService.createHtmlOutputFromFile('stylesheet_common').getContent(); ?>
-  <?!= HtmlService.createHtmlOutputFromFile('stylesheet_Android').getContent(); ?>
-  <?!= HtmlService.createHtmlOutputFromFile('stylesheet_ios').getContent(); ?>
+
+  <link rel="stylesheet" href="stylesheet_common.css">
+  <link rel="stylesheet" href="stylesheet_Android.css">
+  <link rel="stylesheet" href="stylesheet_ios.css">
   <style>
     /* CSSは省略せずそのまま貼り付けてください */
     :root { --primary: #2563eb; --primary-light: #dbeafe; --bg: #f8fafc; --text: #1e293b; --danger: #ef4444; --success: #10b981; }
@@ -210,6 +211,7 @@
   </div>
 </div>
 
-<?!= HtmlService.createHtmlOutputFromFile('javascript').getContent(); ?>
+<script src="javascript.js"></script>
 </body>
+
 </html>
