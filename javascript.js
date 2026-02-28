@@ -99,6 +99,7 @@ async function callGasApi(payload) {
   //const response = await fetch(`${GAS_URL}?${queryParams.toString()}`, {
   //  method: 'GET'
   //});
+ const url = `${GAS_URL}?action=${action}`;
  const response = await fetch(url, {
     method: 'POST', // GETからPOSTへ変更
     mode: 'cors',
@@ -899,6 +900,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
