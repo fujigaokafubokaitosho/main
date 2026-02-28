@@ -91,6 +91,16 @@ function goToSignup() {
   }).getAppUrl();
 }
 
+async function callGasApi(payload) {
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyolxvaK5ZRUZ5RxXjWcoLAGJgcVuN1ZQsxXxJfFxxHghtmdmhA1jFaNZWldvcPsb_L/exec";
+  
+  // URLパラメータにactionを付与してGETで送る（GASの制約上、GETの方が結果を受け取りやすいため）
+  const queryParams = new URLSearchParams(payload);
+  const response = await fetch(`${GAS_URL}?${queryParams.toString()}`, {
+    method: 'GET'
+  });
+  return await response.json();
+}
 /**
  * @brief ログイン処理を実行し、UIをメイン画面に切り替える
  * @details 
@@ -103,16 +113,15 @@ function login() {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('pass').value.trim();
   if (!email || !pass) return showToast(CONFIG.MSG.LOGIN_REQUIRED);
-
   setLoadingMessage(CONFIG.MSG.AUTH_LOADING);
   document.getElementById('loading').style.display = 'flex';
 
-  google.script.run.withSuccessHandler(res => {
-    // セッションタイムアウト判定
-    if (res === false) {
-        handleAuthError();
-        return;
-      }
+  try {
+  const res = await callGasApi({
+      action: 'checkAuth',
+      email: email,
+      pass: pass
+    });
     document.getElementById('loading').style.display = 'none';
     if (res && res.success) {
       // --- 修正ポイント：トークンをブラウザに保存 ---
@@ -142,10 +151,11 @@ function login() {
     } else { 
       showToast(res.message || CONFIG.MSG.AUTH_FAILED, true); 
     }
-  }).withFailureHandler(() => { 
+  } catch (e) {
     document.getElementById('loading').style.display = 'none'; 
-    showToast(CONFIG.MSG.SERVER_ERROR, true); 
-  }).checkAuth(email, pass);
+    showToast(CONFIG.MSG.SERVER_ERROR, true);
+    console.error(e);
+  }
 }
 
 /**
@@ -181,7 +191,8 @@ function openResetModal() {
   document.getElementById('modalInputArea').style.display = 'block';
   document.getElementById('modalCancelBtn').style.display = 'block';
   
-  document.getElementById('modalOkBtn').onclick = () => {
+  // ★通信を待機するため async を追加
+  document.getElementById('modalOkBtn').onclick = async () => {
     const email = document.getElementById('modalEmailInput').value.trim();
     if (!email) return showToast(CONFIG.MSG.RESET_PASS_ERR, true);
     
@@ -189,29 +200,35 @@ function openResetModal() {
     setLoadingMessage(CONFIG.MSG.SENDING, CONFIG.MSG.RESET_PASS_REQ);
     document.getElementById('loading').style.display = 'flex';
     
-    google.script.run
-      .withSuccessHandler(res => {
-      // セッションタイムアウト  
+    // --- google.script.run を callGasApi に書き換え ---
+    try {
+      const res = await callGasApi({
+        action: 'requestPasswordReset',
+        email: email
+      });
+
+      // --- SuccessHandler の中身ここから ---
       if (res === false) {
         handleAuthError();
         return;
-        }
-        document.getElementById('loading').style.display = 'none';
-        if (res.success) {
-          showToast(CONFIG.MSG.RESET_PASS_SENT);
-        } else {
-          showToast(res.message, true);
-        }
-      })
-      .withFailureHandler(() => {
-        document.getElementById('loading').style.display = 'none';
-        showToast(CONFIG.MSG.SERVER_ERROR, true);
-      })
-      .requestPasswordReset(email);
+      }
+      document.getElementById('loading').style.display = 'none';
+      if (res.success) {
+        showToast(CONFIG.MSG.RESET_PASS_SENT);
+      } else {
+        showToast(res.message, true);
+      }
+      // --- SuccessHandler の中身ここまで ---
+
+    } catch (e) {
+      // --- FailureHandler の代わり ---
+      document.getElementById('loading').style.display = 'none';
+      showToast(CONFIG.MSG.SERVER_ERROR, true);
+      console.error(e);
+    }
   };
   overlay.style.display = 'flex';
 }
-
   async function stopAllScanners() {
     if (currentScanner) { try { await currentScanner.stop(); currentScanner = null; } catch (e) {} }
     const bReader = document.getElementById('bookReader');
@@ -827,5 +844,6 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 </script>
