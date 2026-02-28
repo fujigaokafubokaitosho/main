@@ -91,35 +91,20 @@ function goToSignup() {
 
 async function callGasApi(payload) {
 　const GAS_URL = "https://script.google.com/macros/s/AKfycbyolxvaK5ZRUZ5RxXjWcoLAGJgcVuN1ZQsxXxJfFxxHghtmdmhA1jFaNZWldvcPsb_L/exec";
-  const callbackName = "jsonpCallback_" + Date.now(); // ユニークなコールバック名
-
-  // 1. レスポンスを受け取るためのPromiseを返す（async/await対応）
-  return new Promise((resolve, reject) => {
-    
-    // 2. グローバルスコープにコールバック関数を定義
-    window[callbackName] = function(response) {
-      // 使い終わったらscriptタグを削除
-      document.body.removeChild(script);
-      // グローバル関数も削除
-      delete window[callbackName];
-      // 成功としてresolve
-      resolve(response);
-    };
-
-    // 3. パラメータにcallback名を追加
-    const params = new URLSearchParams(payload);
-    params.append('callback', callbackName);
-
-    // 4. scriptタグを作成して実行
-    const script = document.createElement('script');
-    script.src = `${GAS_URL}?${params.toString()}`;
-    script.onerror = () => {
-      reject(new Error('JSONP Request failed'));
-    };
-    
-    document.body.appendChild(script);
+    // POSTリクエストに書き換える
+  const response = await fetch(GAS_URL, {
+    method: 'POST', // POSTに変更
+    mode: 'cors',   // CORSを明示
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json' // JSONとして送信
+    },
+    body: JSON.stringify(payload) // データを文字列化して送信
   });
+  
+  return await response.json();
 }
+
 /**
  * @brief ログイン処理を実行し、UIをメイン画面に切り替える
  * @details 
@@ -912,6 +897,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
