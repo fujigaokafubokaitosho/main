@@ -90,15 +90,21 @@ function goToSignup() {
 }
 
 async function callGasApi(payload) {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyolxvaK5ZRUZ5RxXjWcoLAGJgcVuN1ZQsxXxJfFxxHghtmdmhA1jFaNZWldvcPsb_L/exec";
-  
-  // URLパラメータにactionを付与してGETで送る（GASの制約上、GETの方が結果を受け取りやすいため）
-  const queryParams = new URLSearchParams(payload);
-  const response = await fetch(`${GAS_URL}?${queryParams.toString()}`, {
-    method: 'GET'
+　const GAS_URL = "https://script.google.com/macros/s/AKfycbyolxvaK5ZRUZ5RxXjWcoLAGJgcVuN1ZQsxXxJfFxxHghtmdmhA1jFaNZWldvcPsb_L/exec";
+    // POSTリクエストに書き換える
+  const response = await fetch(GAS_URL, {
+    method: 'POST', // POSTに変更
+    mode: 'cors',   // CORSを明示
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json' // JSONとして送信
+    },
+    body: JSON.stringify(payload) // データを文字列化して送信
   });
+  
   return await response.json();
 }
+
 /**
  * @brief ログイン処理を実行し、UIをメイン画面に切り替える
  * @details 
@@ -891,6 +897,8 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
+
 
 
 

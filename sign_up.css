@@ -1,0 +1,22 @@
+
+/* sign_up.css */
+:root { --primary: #2563eb; --error: #dc2626; --success: #10b981; --bg: #f8fafc; }
+#signupSection {
+    /* to do:*/
+}
+body { font-family: sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+.card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
+h2 { color: 
+    var(--primary); margin: 0 0 20px 0; text-align: center; }
+.step { display: none; }
+.step.active { display: block; }
+.input-group { margin-bottom: 16px; }
+label { display: block; font-size: 14px; margin-bottom: 4px; color: #64748b; }
+input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+button:disabled { background: #94a3b8; cursor: not-allowed; }
+.msg { font-size: 14px; text-align: center; margin-top: 10px; min-height: 20px; }
+
+/* 成功時のアニメーション */
+@keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.success-icon { font-size: 64px; color: var(--success); animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
