@@ -800,6 +800,16 @@ function showLoginSection() {
  * ページ読み込み時に自動実行される初期化処理
  */
 window.onload = async function() {
+    try {
+    const config = await callGasApi({ action: 'getConfigValues' });
+    window.GAS_MAX_LOAN_LIMIT = config.MAX_LOAN_LIMIT;
+    window.GAS_ALERT_DAYS = config.ALERT_DAYS;
+    window.GAS_LIMIT_DAYS = config.LIMIT_DAYS;
+  } catch (e) {
+    console.error("Config load error", e);
+    // 取得失敗時のデフォルト値
+    window.GAS_MAX_LOAN_LIMIT = 5; 
+  }
   const email = sessionStorage.getItem(CONFIG.STORAGE_KEY.EMAIL);
   const token = sessionStorage.getItem(CONFIG.STORAGE_KEY.TOKEN);
 
@@ -873,3 +883,4 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
