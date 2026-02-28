@@ -286,9 +286,9 @@ function renderMyLoans() {
       if (parts.length === 2) {
         const due = new Date(now.getFullYear(), parseInt(parts[0]) - 1, parseInt(parts[1]));
         const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
-        if (diffDays <= CONFIG.LIMIT_DAYS) {
+        if (diffDays <= window.CONFIG.LIMIT_DAYS) {
           dateStyle = "color: #ef4444; font-weight: bold;"; 
-        } else if (diffDays <= CONFIG.ALERT_DAYS) {
+        } else if (diffDays <= window.CONFIG.ALERT_DAYS) {
           dateStyle = "color: #f59e0b; font-weight: bold;"; 
         }
       }
@@ -479,8 +479,8 @@ function addToCart(title, source = null, index = -1) {
   // シミュレーション計算：(今の冊数 - 返却分 + 貸出分) + 今回追加する1冊
     const simulatedTotal = baseCount - returnCountInCart + borrowCountInCart + 1;
 
-  if (simulatedTotal > CONFIG.MAX_LOAN_LIMIT) {
-    return showToast(CONFIG.MSG.LIMIT_OVER(CONFIG.MAX_LOAN_LIMIT), true);
+  if (simulatedTotal > window.CONFIG.MAX_LOAN_LIMIT) {
+    return showToast(CONFIG.MSG.LIMIT_OVER(window.CONFIG.MAX_LOAN_LIMIT), true);
   }
 }
 
@@ -891,6 +891,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
