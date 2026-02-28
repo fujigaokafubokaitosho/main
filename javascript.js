@@ -1,6 +1,5 @@
 
 <script>
-  <?!= HtmlService.createHtmlOutputFromFile('config_javascript').getContent(); ?>
 let currentUser = null; 
 let cart = []; 
 let masterBooks = []; 
@@ -109,7 +108,7 @@ async function callGasApi(payload) {
  * 3. 成功時：ユーザー名、パスワード（セッション用）、蔵書データをメモリに保持しメイン画面を表示。
  * 4. 初回登録が必要な場合：サーバーから返された `targetUrl` を使って登録画面へ誘導。
  */
-function login() {
+async function login() {
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('pass').value.trim();
   if (!email || !pass) return showToast(CONFIG.MSG.LOGIN_REQUIRED);
@@ -879,4 +878,5 @@ function handleAuthError() {
 
 
 </script>
+
 
