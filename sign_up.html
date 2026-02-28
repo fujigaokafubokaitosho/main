@@ -4,7 +4,6 @@
   <base target="_top">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    /* 修正なし */
     :root { --primary: #2563eb; --error: #dc2626; --success: #10b981; --bg: #f8fafc; }
     body { font-family: sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
@@ -60,68 +59,67 @@
 </div>
 
 <script>
-  // ★GASのウェブアプリURL (末尾に/exec)
+  // ★重要：ご自身のGASウェブアプリURL（/exec）に書き換えてください
   const GAS_URL = "YOUR_GAS_WEB_APP_URL";
+  // ログイン画面のURL（GitHub Pages）
+  const LOGIN_URL = "https://your-username.github.io/your-repo/index.html";
   let verifiedId = "";
 
-  // ★ fetch関数を使ってGASにデータを送信する共通関数
+  // GASへリクエストを送る共通関数 (CORS対応版)
   async function callGasApi(action, params) {
     const url = `${GAS_URL}?action=${action}`;
     const response = await fetch(url, {
       method: 'POST',
-      mode: 'no-cors', // 一旦no-corsで動かす場合
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(params)
+      mode: 'cors', // CORSを有効にする
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params) // JSON形式で送る
     });
-    // no-corsの場合、response.json()は使えませんが、成功したとみなして進めます
-    return { success: true }; 
+    return await response.json();
   }
 
-  // うまくいかない場合は、下記のようにCORSを有効にしたfetchを使います
-  // async function callGasApiWithCors(action, params) {
-  //   const url = `${GAS_URL}?action=${action}`;
-  //   const response = await fetch(url, {
-  //     method: 'POST',
-  //     // mode: 'cors', // ブラウザが自動的にcorsを選択する
-  //     body: JSON.stringify(params) // JSON形式で送る場合
-  //   });
-  //   return await response.json();
-  // }
-  
-async function checkIdentity() {
-　const id = document.getElementById('regId').value.trim();
-  const name = document.getElementById('regName').value.trim();
-  
-  // ★google.script.run を fetch に置き換え
-  try {
-    const response = await fetch(`${GAS_URL}?action=verifyInitialID`, {
-      method: 'POST',
-      mode: 'cors', // CORSを明示
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ id, name })
-    });
+  // 本人確認チェック
+  async function checkIdentity() {
+    const id = document.getElementById('regId').value.trim();
+    const name = document.getElementById('regName').value.trim();
+    const err = document.getElementById('err1');
+    const btn = document.getElementById('nextBtn');
     
-    const res = await response.json(); // GASからのJSON応答を受け取る
-
-    if(res.success) {
-      verifiedId = id;
-      document.getElementById('step1').classList.remove('active');
-      document.getElementById('step2').classList.add('active');
-    } else {
-      document.getElementById('err1').innerText = res.message;
+    if(!id || !name) {
+      err.innerText = "IDと名前を入力してください。";
+      return;
     }
-  } catch (error) {
-    console.error('Error:', error);
-    document.getElementById('err1').innerText = "通信エラーが発生しました。";
+
+    err.innerText = "確認中...";
+    btn.disabled = true;
+
+    try {
+      // callGasApiを使用
+      const res = await callGasApi('verifyInitialID', {id, name});
+      
+      if(res.success) {
+        verifiedId = id;
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+      } else {
+        err.innerText = res.message;
+      }
+    } catch (e) {
+      err.innerText = "通信エラーが発生しました。";
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+    }
   }
 
+  // パスワード入力チェック
   function validatePass() {
     const p1 = document.getElementById('regPass1').value;
     const p2 = document.getElementById('regPass2').value;
     const btn = document.getElementById('submitBtn');
     btn.disabled = !(p1.length >= 8 && p1 === p2);
   }
-  
+
+  // 登録完了処理
   async function submitRegister() {
     const email = document.getElementById('regEmail').value.trim();
     const pass = document.getElementById('regPass1').value;
@@ -157,11 +155,9 @@ async function checkIdentity() {
       btn.disabled = false;
       err.style.color = "var(--error)";
       err.innerText = "通信エラーが発生しました。";
+      console.error(e);
     }
   }
 </script>
 </body>
 </html>
-
-
-
