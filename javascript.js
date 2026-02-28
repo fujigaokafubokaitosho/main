@@ -804,11 +804,8 @@ window.onload = async function() {
         const configRes = await callGasApi({ action: 'getConfigValues' });
     
     　// グローバルな CONFIG オブジェクトを最新の値で更新する
-    　window.CONFIG = Object.assign({}, window.CONFIG, {
-      MAX_LOAN_LIMIT: configRes.MAX_LOAN_LIMIT,
-      ALERT_DAYS: configRes.ALERT_DAYS,
-      LIMIT_DAYS: configRes.LIMIT_DAYS
-    });
+    Object.assign(window.CONFIG, configRes);
+    
     
     console.log("Updated CONFIG:", window.CONFIG); // デバッグログ
   } catch (e) {
@@ -889,6 +886,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
