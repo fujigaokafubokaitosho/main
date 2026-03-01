@@ -96,7 +96,8 @@ async function callGasApi(payload) {
   const response = await fetch(url, {
     method: 'POST',
     mode: 'cors',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      //　オプション扱いになるとGASは怒る
+    //headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: bodyParams
   });
 
@@ -895,6 +896,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
