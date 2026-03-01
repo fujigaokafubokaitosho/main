@@ -100,7 +100,8 @@ async function callGasApi(payload) {
     //headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: bodyParams
   });
-
+const textResponse = await response.text();
+    console.log("GASからの生のレスポンス:", textResponse);
   return await response.json();
 }
 
@@ -896,6 +897,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
