@@ -68,11 +68,9 @@
   // GASへリクエストを送る共通関数 (CORS対応版)
   async function callGasApi(action, params) {
     const url = `${GAS_URL}?action=${action}`;
+    const bodyParams = new URLSearchParams(params);
     const response = await fetch(url, {
       method: 'POST',
-      // mode: 'no-cors', // CORSを有効にする
-      // headers: { 'Content-Type': 'application/json' },
-      // body: JSON.stringify(params) // JSON形式で送る
 　    mode: 'cors', // corsに設定
   　  headers: { 
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -169,6 +167,7 @@
 </script>
 </body>
 </html>
+
 
 
 
