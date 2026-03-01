@@ -91,8 +91,8 @@ async function callGasApi(payload) {
   const GAS_URL = "https://script.google.com/macros/s/AKfycbz5QNDlZ0rB3C3DP2CZ31Ff4ECrki53K12WtLccUMXQlyqs3yBOnVaHpMc7WvYAsfeh/exec";
   const action = payload.action;
   const { action: _, ...params } = payload;
-  const url = `${GAS_URL}?action=${action}`;  
-  const bodyParams = new URLSearchParams(params);
+  const url = `${GAS_URL}?action=${action}`;
+　const bodyParams = new URLSearchParams(payload);//param空対策
   const response = await fetch(url, {
     method: 'POST',
     mode: 'cors',
@@ -895,6 +895,7 @@ function handleAuthError() {
   showLoginSection();
   showToast("セッションの期限が切れました。再度ログインしてください。", true);
 }
+
 
 
 
